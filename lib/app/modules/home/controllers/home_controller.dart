@@ -15,10 +15,10 @@ class HomeController extends GetxController {
     LocationPermission permission;
 
     // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
+    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) {
+    //   return Future.error('Location services are disabled.');
+    // }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -41,6 +41,18 @@ class HomeController extends GetxController {
       } else {
         getweatherInfo(true);
       }
+    } else if (permission == LocationPermission.unableToDetermine) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        getweatherInfo(false);
+        // return Future.error('Location permissions are denied');
+      } else if (permission == LocationPermission.deniedForever) {
+        getweatherInfo(false);
+      } else {
+        getweatherInfo(true);
+      }
+    } else {
+      getweatherInfo(true);
     }
   }
 
@@ -50,7 +62,7 @@ class HomeController extends GetxController {
     var apiKey = '05ed7d3a60374c8f840171631231001';
     var url;
     if (isPostionGot) {
-      Position position = await determinePosition();
+      Position position = await Geolocator.getCurrentPosition();
       url =
           'http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${position.latitude.toString()},${position.longitude.toString()}&days=7';
     } else {
