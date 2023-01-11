@@ -10,6 +10,7 @@ void main() {
       title: "Weather app",
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+      debugShowCheckedModeBanner: false,
     ),
   );
 }
